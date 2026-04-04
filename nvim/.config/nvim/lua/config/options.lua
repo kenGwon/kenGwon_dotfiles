@@ -15,6 +15,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufNewFile" }, {
 vim.g.autoformat = false -- neovim auto formatting 비활성화
 vim.g.lazyvim_fix_whitespace = false -- 저장 시 trailing whitespace 자동 제거 비활성화
 
+vim.opt.clipboard = "unnamedplus"		-- 시스템 클립보드 동기화
 vim.opt.list = false -- 탭/공백 특수문자 표시 비활성화
 vim.opt.ttimeoutlen = 10 -- Esc 키 딜레이 최소화
 vim.opt.wildmode = "list:longest"       -- bash처럼 최장 매치 후 목록 표시 (순회 없음)
