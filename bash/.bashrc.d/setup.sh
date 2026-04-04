@@ -27,7 +27,7 @@ alias gr='grep -r -n -i'
 
 
 alias python='python3'
-alias cat='batcat'
+alias cat='bat'
 
 alias bmake='bear --append -- make'
 alias bmakef='bear -- make'          # f = fresh
