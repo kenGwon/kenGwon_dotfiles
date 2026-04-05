@@ -18,6 +18,7 @@ vim.g.lazyvim_fix_whitespace = false -- 저장 시 trailing whitespace 자동 �
 vim.opt.clipboard = "unnamedplus"		-- 시스템 클립보드 동기화
 vim.opt.list = false -- 탭/공백 특수문자 표시 비활성화
 vim.opt.ttimeoutlen = 10 -- Esc 키 딜레이 최소화
-vim.opt.wildmode = "list:longest"       -- bash처럼 최장 매치 후 목록 표시 (순회 없음)
-vim.opt.wildmenu = true                 -- wildmenu 활성화
-vim.opt.wildoptions = ""                -- pum(팝업) 비활성화 → bash 스타일 경로 탐색
+
+vim.opt.wildmenu = true                   -- wildmenu 활성화
+vim.opt.wildmode = "list:longest,list"    -- bash처럼: 목록 표시 + 최장 공통 매치, 그 다음 탭은 재목록
+vim.opt.wildoptions = "fuzzy"             -- fuzzy 매칭 활성화 (pum 제거: 팝업 순회 방식 비활성화)
