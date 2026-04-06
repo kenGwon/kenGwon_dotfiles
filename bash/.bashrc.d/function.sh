@@ -46,13 +46,13 @@ winpath() {
 }
 
 evk_echo_nfs_mount() {
-	echo "mount -t nfs -o nolock 192.168.0.100:/home/ghgwon /nfs"
+	echo "mount -t nfs -o nolock 192.168.0.99:/home/ghgwon /nfs"
 	echo
 
 	/usr/bin/cat << 'EOF'
-ping 192.168.0.100 -c 1 > /dev/null 
+ping 192.168.0.99 -c 1 > /dev/null 
 if [ $? -eq 0 ] ; then 
-  mount -t nfs -o nolock 192.168.0.100:/home/ghgwon /nfs 
+  mount -t nfs -o nolock 192.168.0.99:/home/ghgwon /nfs 
   if [ $? -eq 0 ] ; then 
     df | grep nfs 
     echo "0.100 WSL ghgwon NFS mount success!!!" 
