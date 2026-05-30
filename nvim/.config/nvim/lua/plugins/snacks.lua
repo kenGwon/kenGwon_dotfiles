@@ -7,11 +7,11 @@ return {
         sources = {
           files = {
             hidden = true,
-            no_ignore = true,
+            ignored = true,
           },
           grep = {
             hidden = true,
-            no_ignore = true,
+            ignored = true,
           },
           explorer = {
             hidden = true,
