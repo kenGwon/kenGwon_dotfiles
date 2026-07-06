@@ -165,14 +165,13 @@ return {
     end,
   },
 
-  -- or you can return new options to override all the defaults
+  -- or you can extend the defaults with additional options
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
-    opts = function()
-      return {
-        --[[add your custom lualine config here]]
-      }
+    opts = function(_, opts)
+      --[[add your custom lualine config here]]
+      return opts
     end,
   },
 
