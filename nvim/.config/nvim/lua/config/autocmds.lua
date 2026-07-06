@@ -7,6 +7,17 @@
 -- Or remove existing autocmds by their group name (which is prefixed with `lazyvim_` for the defaults)
 -- e.g. vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 
+-- 세션 복원 후 남는 [No Name] 버퍼 제거
+vim.api.nvim_create_autocmd("SessionLoadPost", {
+  callback = function()
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_get_name(buf) == "" and not vim.bo[buf].modified then
+        vim.api.nvim_buf_delete(buf, { force = false })
+      end
+    end
+  end,
+})
+
 -- 외부에서 파일이 변경되면 자동으로 버퍼에 반영
 vim.opt.autoread = true
 vim.opt.updatetime = 1000
