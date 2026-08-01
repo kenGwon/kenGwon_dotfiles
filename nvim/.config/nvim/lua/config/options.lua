@@ -2,6 +2,12 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 
+-- background를 명시하지 않으면 nvim이 시작 시 OSC 10/11로 터미널에 색상을 질의함.
+-- tmux + SSH 환경에서는 이 질의의 응답이 왕복 지연으로 인해 nvim 종료 후에 도착해
+-- bash 프롬프트에 raw 이스케이프 문자열이 그대로 찍히는 문제가 있었음. 질의 자체를
+-- 막기 위해 명시적으로 지정 (colorscheme.lua의 vscode.nvim style = "dark"와 일치).
+vim.opt.background = "dark"
+
 vim.api.nvim_create_autocmd({ "BufEnter", "BufNewFile" }, {
   pattern = { "*" },                -- 모든 파일 확장자에 대하여 적용
   callback = function()
