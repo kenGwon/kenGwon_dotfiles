@@ -16,21 +16,59 @@ if [ -n "$force_color_prompt" ]; then
         color_prompt=yes
     else
         color_prompt=
-    fi  
+    fi
 fi
 
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[4;36m\]\u@\h\[\033[00m\]:\[\033[01;35m\]\w\[\033[00m\]\$ '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+# 프롬프트에 git branch/status를 표시하기 위해 __git_ps1을 로드
+# (bash-completion 패키지가 보통 자동으로 로드해주지만, 없는 환경을 위한 fallback)
+if ! declare -f __git_ps1 >/dev/null 2>&1; then
+    for _git_prompt_sh in \
+        /usr/lib/git-core/git-sh-prompt \
+        /usr/share/git-core/contrib/completion/git-prompt.sh \
+        /usr/share/git/completion/git-prompt.sh \
+        /etc/bash_completion.d/git-prompt \
+        /opt/homebrew/etc/bash_completion.d/git-prompt.sh; do
+        [ -r "$_git_prompt_sh" ] && source "$_git_prompt_sh" && break
+    done
+    unset _git_prompt_sh
 fi
-unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;  
+    _ps1_title='\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]'
+    ;;
 *)
-    ;;  
+    _ps1_title=''
+    ;;
 esac
+
+if declare -f __git_ps1 >/dev/null 2>&1; then
+    # dirty(수정)/staged(스테이징)/stash/untracked 상태를 모두 표시하고,
+    # GIT_PS1_SHOWCOLORHINTS로 branch 색을 상태에 따라 초록/노랑/빨강으로 바꿔줌
+    GIT_PS1_SHOWDIRTYSTATE=1
+    GIT_PS1_SHOWSTASHSTATE=1
+    GIT_PS1_SHOWUNTRACKEDFILES=1
+    GIT_PS1_SHOWUPSTREAM="auto"
+    GIT_PS1_SHOWCOLORHINTS=1
+
+    if [ "$color_prompt" = yes ]; then
+        _ps1_prefix="${_ps1_title}"'${debian_chroot:+($debian_chroot)}\[\033[4;36m\]\u@\h\[\033[00m\]:\[\033[01;35m\]\w\[\033[00m\]'
+    else
+        _ps1_prefix="${_ps1_title}"'${debian_chroot:+($debian_chroot)}\u@\h:\w'
+    fi
+
+    __git_ps1_update() {
+        __git_ps1 "$_ps1_prefix" '\$ ' ' (%s)'
+    }
+
+    # zoxide 등 기존 PROMPT_COMMAND(cd 훅 등)를 덮어쓰지 않고 뒤에 추가
+    PROMPT_COMMAND="${PROMPT_COMMAND%;}"
+    PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }__git_ps1_update"
+elif [ "$color_prompt" = yes ]; then
+    PS1="${_ps1_title}"'${debian_chroot:+($debian_chroot)}\[\033[4;36m\]\u@\h\[\033[00m\]:\[\033[01;35m\]\w\[\033[00m\]\$ '
+else
+    PS1="${_ps1_title}"'${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+
+unset color_prompt force_color_prompt _ps1_title
