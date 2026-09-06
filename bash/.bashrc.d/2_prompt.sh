@@ -38,8 +38,19 @@ fi
 # 1순위: gitstatus(gitstatusd) - 병렬 스캔 데몬이라 대형 모노레포에서도 dirty/staged/untracked를
 # 전부 빠르게 보여줄 수 있음. romkatv/gitstatus 서브모듈이 있고 데몬 기동에 성공할 때만 사용.
 _gitstatus_plugin="$(dirname "${BASH_SOURCE[0]}")/vendor/gitstatus/gitstatus.plugin.sh"
+if [ -r "$_gitstatus_plugin" ] && source "$_gitstatus_plugin"; then
+    # tmux 등에서 새 pane을 열면, 이 pane과 무관한 예전 프로세스가 export해둔
+    # GITSTATUS_DAEMON_PID/_GITSTATUS_REQ_FD 등을 그대로 물려받는 경우가 있다.
+    # gitstatus_start는 GITSTATUS_DAEMON_PID가 있으면 "이미 시작됨"으로 보고
+    # 그냥 넘어가버리는데, 그 FD는 이 프로세스에서 연 적이 없어서
+    # "Bad file descriptor" 에러가 난다. gitstatus_stop은 자신이 연 게 맞는지
+    # (_GITSTATUS_CLIENT_PID == $BASHPID) 확인 후 아니면 변수만 안전하게 지워주므로,
+    # 매번 먼저 호출해서 물려받은 상태를 정리하고 이 프로세스 몫을 새로 연다.
+    gitstatus_stop 2>/dev/null
+fi
+
 if [ -r "$_gitstatus_plugin" ] \
-    && source "$_gitstatus_plugin" \
+    && declare -f gitstatus_start >/dev/null 2>&1 \
     && gitstatus_start -s -1 -u -1 -c -1 -d -1 2>/dev/null; then
 
     __prompt_update() {
