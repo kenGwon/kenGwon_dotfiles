@@ -3,6 +3,11 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# gitstatus(빠른 git 프롬프트 데몬) 서브모듈 초기화
+if [ -d "$DOTFILES_DIR/.git" ]; then
+  git -C "$DOTFILES_DIR" submodule update --init --recursive bash/.bashrc.d/vendor/gitstatus
+fi
+
 link() {
   local src="$1"
   local dst="$2"
